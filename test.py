@@ -18,7 +18,8 @@ data=[]
 done=False
 l = f.readline()
 while l and done==False:
-	if l[0] == ">":
+	l=l.strip()
+	if len(l) > 0 and l[0] == ">":
 		# we have a name
 		name=l[1:]
 		if len(data)>0:
@@ -37,7 +38,12 @@ g = d.dataTrans
 # shift g by k to get h
 h = np.roll(d.dataTrans,k)
 
-print calcCorrShift(h, g)
-print len(h)
+print "\ninput:", d.name
+print "length:", len(d.dataTrans)
+corr,shift = calcCorrShift(h, g)
+print "test shift by 20 nucleotides\n\n\nresults:"
+print "\tbest shift:", shift
+print "\tcorrelation:", corr.real
+
 		
 

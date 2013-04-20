@@ -10,6 +10,7 @@ class dataObj:
 		self.dataTrans=np.array(self.transcribe(self.dataRaw))
 	
 	def _transcribe(inst,i):
+		i=i.lower()
 		if i == "a":
 			return 1
 		elif i == "u":

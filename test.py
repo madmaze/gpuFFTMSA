@@ -12,6 +12,7 @@ def calcCorrShift(H, G):
 	
 	# Correlation, shift
 	return (f.max(), k[0][0])
+	
 def genCompareStr(h,g):
 	compStr=""
 	for x,y in zip(h,g):
@@ -20,6 +21,16 @@ def genCompareStr(h,g):
 		else:
 			compStr+="-"
 	return compStr
+
+def calcCorrShiftmn(H,G,h,g):
+	# H is long and G is short
+	H_ = np.fft.fft(H)
+	G_ = np.fft.fft(G)
+	f = np.fft.ifft(H_ * np.conj(G_))
+	
+	k=np.where(f==f.max())
+	return (f.max(), k[0][0])
+
 def calcCorrShift2(H, G, h, g):
 	f = np.fft.ifft(np.fft.fft(H) * np.conj(np.fft.fft(G)))
 	#print np.mean(f), np.min(f), np.max(f), np.std(f)

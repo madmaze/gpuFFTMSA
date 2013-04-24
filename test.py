@@ -22,10 +22,15 @@ def genCompareStr(h,g):
 			compStr+="-"
 	return compStr
 
-def calcCorrShiftmn(H,G,h,g):
+def calcCorrShiftmn(H,G):
 	# H is long and G is short
-	H_ = np.fft.fft(H)
-	G_ = np.fft.fft(G)
+	H_ = np.fft.fft(H.dataTrans)
+	
+	#padded=np.zeros_like(H.dataTrans)
+	#padded[0:len(G.dataTrans)]=G.dataTrans
+	
+	# pad G with zeros to size of H
+	G_ = np.fft.fft(G.getTransPadded(len(H.dataTrans)))
 	f = np.fft.ifft(H_ * np.conj(G_))
 	
 	k=np.where(f==f.max())
@@ -98,14 +103,32 @@ while l and done==False:
 	l = f.readline()
 
 k = 20 # shift
-g = d.dataTrans
+h = d.dataTrans
 # shift g by k to get h
-h = np.roll(d.dataTrans,k)
+#g = np.roll(d.dataTrans,k)
 
+g = dataObj.dataObj("test", list("cugcggaaccggugaguacaccggaa"))
 print "\ninput:", d.name
-print "length:", len(d.dataTrans)
+print "length H:", len(d.dataTrans)
+print "length G:", len(g.dataTrans)
+
+corr,shift = calcCorrShiftmn(d, g)
+
+print "shift:",shift
+print "corr:",corr.real
+
+shifted = np.roll(g.getRawPadded(len(d)),shift)
+comp = genCompareStr(d.dataRaw, shifted)
+
+fout=open("res.txt","w")
+fout.write("".join(d.dataRaw)+"\n")
+fout.write(comp+"\n")
+fout.write("".join(shifted)+"\n")
+fout.close()
+
+
 #corr,shift = calcCorrShift2(h, g, np.roll(d.dataRaw,k), d.dataRaw)
-corr,shift = calcCorrShift2(g, h, d.dataRaw, np.roll(d.dataRaw,k))
+#corr,shift = calcCorrShift2(g, h, d.dataRaw, np.roll(d.dataRaw,k))
 #print "test shift by 20 nucleotides\n\n\nresults:"
 #print "\tbest shift:", shift
 #print "\tcorrelation:", corr.real

@@ -35,6 +35,32 @@ def calcCorrShiftmn(H,G):
 	
 	k=np.where(f==f.max())
 	return (f.max(), k[0][0])
+	
+def calcCorrShiftmn_efficient(H,G,m,n):
+	# H is long and G is short
+	H_ = np.fft.fft(H.dataTrans)
+	
+	#padded=np.zeros_like(H.dataTrans)
+	#padded[0:len(G.dataTrans)]=G.dataTrans
+	
+	# pad G with zeros to size of H
+	G_ = np.fft.fft(G.getTransPadded(len(H.dataTrans)))
+	G__ = np.fft.fft(G.dataTrans)
+	print np.fft.fft(G.getTransPadded(len(H.dataTrans)))
+	print n, len(G_), len(G__)
+	
+	f_ = np.zeros_like(H_)
+	#f_ = H_.copy()
+	for i in range(n):
+		f_[i] = H_[i] * np.conj(G__[i])
+	
+	f = np.fft.ifft(f_)
+	
+	#pylab.plot(f_.real)
+	#pylab.plot(H_.real)
+	#pylab.show()
+	k=np.where(f==f.max())
+	return (f.max(), k[0][0])
 
 def calcCorrShift2(H, G, h, g):
 	f = np.fft.ifft(np.fft.fft(H) * np.conj(np.fft.fft(G)))
@@ -107,12 +133,15 @@ h = d.dataTrans
 # shift g by k to get h
 #g = np.roll(d.dataTrans,k)
 
-g = dataObj.dataObj("test", list("cugcggaaccggugaguacaccggaa"))
+#g = dataObj.dataObj("test", list("cugcggaaccggugaguacaccggaa"))
+g = dataObj.dataObj("test", list("ccauggcguuaguau"))
 print "\ninput:", d.name
 print "length H:", len(d.dataTrans)
 print "length G:", len(g.dataTrans)
 
-corr,shift = calcCorrShiftmn(d, g)
+#corr,shift = calcCorrShiftmn(d, g)
+
+corr,shift = calcCorrShiftmn_efficient(d, g, len(d),len(g))
 
 print "shift:",shift
 print "corr:",corr.real

@@ -6,6 +6,7 @@ import os
 import logging as log
 import glob
 import numpy as np
+import time
 
 import dataObj as do
 import aligner
@@ -63,9 +64,14 @@ def main(args):
 	log.info("read " + str(len(G_array)) + " search sequences.")
 		
 	#transform
-	res = aligner.calcCorrShiftmn(H_array, G_array, args.gpuflag)
+	stime=time.clock()
+	res = aligner.calcCorrShiftmn(H_array, G_array, GPUmode=args.gpuflag)
+	etime=time.clock()
+
+	for r in res:
+		print r["H"].name, r["G"].name
 	
-	#print res
+	log.info("Time to alignment: "+str(etime-stime)+"s")
 
 if __name__ == "__main__":
 	

@@ -25,7 +25,7 @@ def genCompareStr(h,g):
 			compStr+="-"
 	return compStr
 
-def calcCorrShiftmn(H, G, GPUmode=False, plot=False):
+def calcCorrShiftmn(H, G, prctMatch=75,GPUmode=False, plot=False):
 	res=[]
 	if not GPUmode:
 		log.info("Starting CPU based alignment...")
@@ -56,19 +56,17 @@ def calcCorrShiftmn(H, G, GPUmode=False, plot=False):
 					pylab.plot(f[0:2500].real)
 					pylab.show()
 				log.info(H_t.name + "vs " + G_t.name+" => shift: "+str(k[0][0])+" corr: "+str(f.max().real))
-				res.append({"shift":k[0][0],"corr":f.max()})
+				
+				res.append({"H":H_t,"G":G_t,"shift":k[0][0],"corr":f.max()})
 	else:
 		log.info("Starting GPU based alignment...")
 		res = calcCorrShiftGPU(H,G)
+		log.info("done GPU based alignment...")
 		
 	return res
 	
 def calcCorrShiftGPU(H, G):
-	#print "not yet implemented"
-	#cuda.init()
-	#context = make_default_context()
-	#stream = cuda.Stream()
-	
+	res=[]
 	# make sure we get arrays of items
 	if type(G) != type([]):
 		G=[G]
@@ -105,30 +103,8 @@ def calcCorrShiftGPU(H, G):
 			maxVal = f_host.max()
 			k=np.where(f_host==maxVal)
 			print k[0][0], maxVal.real
-			
+			res.append({"H":H_t,"G":G_t,"shift":k[0][0],"corr":maxVal.real})
 			#maxVal = gpuarray.max(F_gpu.real)
 			#print maxVal
-			'''
-			print F_gpu.dtype
-			print F_gpu.real.dtype
-			print F_gpu.mem_size
-			
-			maxVal = gpuarray.max(F_gpu.real)
-			print maxVal
-			'''
-	
-	
-	
-	"""
-	H_gpu = gpuarray.to_gpu(H[0].dataTrans)
-	
-	# plan has to be power of 2
-	fftPlan = Plan(len(H[0].dataTrans))
-	
-	log.debug("Starting H_ fft on GPU...")
-	fftPlan.execute(H_gpu)
-	res = H_gpu.get()
-	log.debug("done and returned H_ fft on GPU...")
-	#Context.pop()
-	exit()
-	"""
+	return res
+

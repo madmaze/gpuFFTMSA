@@ -59,7 +59,7 @@ class dataObj:
 		
 		
 	def getTransPadded(self, padLen):
-		padded=np.zeros(padLen,dtype=np.complex)
+		padded=np.zeros(padLen,dtype=np.complex64)
 		padded[0:len(self.dataTrans)]=self.dataTrans
 		return padded[:]
 	

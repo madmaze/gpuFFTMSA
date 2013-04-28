@@ -69,6 +69,57 @@ def calcCorrShiftGPU(H, G):
 	#context = make_default_context()
 	#stream = cuda.Stream()
 	
+	# make sure we get arrays of items
+	if type(G) != type([]):
+		G=[G]
+	if type(H) != type([]):
+		H=[H]
+	for H_t in H:
+		# Setup plan has to be power of 2
+		fftPlan = Plan(len(H_t.dataTrans), wait_for_finish=True)
+		
+		# H is long and G is short
+		log.debug("Starting H_ fft on GPU...")
+		
+		# push to GPU
+		H_gpu = gpuarray.to_gpu(H_t.dataTrans)
+		
+		# do forwards FFT in place
+		fftPlan.execute(H_gpu)
+		
+		for G_t in G:
+			# pad G with zeros to size of H
+			log.debug("Starting G_ fft on GPU...")
+			G_gpu = gpuarray.to_gpu(G_t.getTransPadded(len(H_t.dataTrans)))
+			
+			# do forwards FFT in place
+			fftPlan.execute(G_gpu)
+			
+			F_gpu = H_gpu * G_gpu.conj()
+			
+			
+			fftPlan.execute(F_gpu, inverse=True)
+			
+			f_host = F_gpu.get()
+			
+			maxVal = f_host.max()
+			k=np.where(f_host==maxVal)
+			print k[0][0], maxVal.real
+			
+			#maxVal = gpuarray.max(F_gpu.real)
+			#print maxVal
+			'''
+			print F_gpu.dtype
+			print F_gpu.real.dtype
+			print F_gpu.mem_size
+			
+			maxVal = gpuarray.max(F_gpu.real)
+			print maxVal
+			'''
+	
+	
+	
+	"""
 	H_gpu = gpuarray.to_gpu(H[0].dataTrans)
 	
 	# plan has to be power of 2
@@ -80,3 +131,4 @@ def calcCorrShiftGPU(H, G):
 	log.debug("done and returned H_ fft on GPU...")
 	#Context.pop()
 	exit()
+	"""

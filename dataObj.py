@@ -6,8 +6,9 @@ import math
 class dataObj:
 	dataTrans=np.array([])
 	
-	def __init__(self, name = None, dataRaw = []):
+	def __init__(self, name = None, fname = None, dataRaw = []):
 		self.name = name.strip()
+		self.fname = fname.strip()
 		self.dataRaw = dataRaw
 		log.debug("starting transcription of " + self.name + " " + str(len(dataRaw)))
 		
@@ -74,5 +75,5 @@ class dataObj:
 		return tmp 
 		
 	def __repr__(self):
-		s=self.name+"\n"
+		s=self.fname+"\n"
 		return s

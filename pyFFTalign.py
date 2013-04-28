@@ -32,7 +32,7 @@ def readGenome(fname, verify=True):
 		for l in fin.readlines():
 			data.extend(l.strip())
 		
-		tmp = do.dataObj(header, list(data))
+		tmp = do.dataObj(name=header,fname=f, dataRaw=list(data))
 		if verify and tmp.verifyTranscription() == False:
 			# perhaps we should fail here
 			log.warning(tmp.name + " failed transcription.")
@@ -50,7 +50,7 @@ def readSequences(fname):
 	for l in f.readlines():
 		if l.strip() != "":
 			name,data = l.strip().split("|")
-			seqs.append(do.dataObj(name, list(data)))
+			seqs.append(do.dataObj(name=name, fname=fname, dataRaw=list(data)))
 	return seqs
 	
 

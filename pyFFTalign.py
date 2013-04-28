@@ -78,6 +78,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="given a directory of input genomes and sequences it will try to match up each sequence to its genome")
 	parser.add_argument("-i","--inputgenome",dest="input_genome", default="./data/sampleGenome.fna", help="Input genome file or dir of fna files")
 	parser.add_argument("-s","--inputseqs",dest="input_seqs", default="./data/sampleGenome.seq", help="Input sequence file")
+	parser.add_argument("--logFile",dest="logFile", default="", help="output to log file")
 	parser.add_argument("-l","--log",dest="logLevel", default="INFO", help="Log level (default: INFO)")
 	parser.add_argument("-g","--usegpu",dest="gpuflag", action="store_true", help="gpu option")
 	parser.add_argument("--verify",dest="verify", action="store_true", help="verify successfull transcription")
@@ -89,7 +90,10 @@ if __name__ == "__main__":
 	    exit()
 	
 	# setup logger
-	log.basicConfig(level=verbosity, format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
+	if args.logFile != "":
+		log.basicConfig(level=verbosity, filename=args.logFile, filemode='w', format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
+	else:
+		log.basicConfig(level=verbosity, format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
 	try:
 		import pycuda
 		from pyfft.cuda import Plan

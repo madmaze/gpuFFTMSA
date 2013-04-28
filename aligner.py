@@ -8,9 +8,7 @@ import logging as log
 
 try:
 	from pyfft.cuda import Plan
-	#from pycuda.tools import make_default_context
 	import pycuda.gpuarray as gpuarray
-	#import pycuda.driver as cuda
 	import pycuda.autoinit
 except ImportError:
 	cuda_enabled = False
@@ -57,7 +55,7 @@ def calcCorrShiftmn(H, G, prctMatch=75,GPUmode=False, plot=False):
 					pylab.show()
 				log.info(H_t.name + "vs " + G_t.name+" => shift: "+str(k[0][0])+" corr: "+str(f.max().real))
 				
-				res.append({"H":H_t,"G":G_t,"shift":k[0][0],"corr":f.max()})
+				res.append({"H":H_t,"G":G_t, "shift":k[0][0], "corr":f.max()})
 	else:
 		log.info("Starting GPU based alignment...")
 		res = calcCorrShiftGPU(H,G)
@@ -102,8 +100,8 @@ def calcCorrShiftGPU(H, G):
 			
 			maxVal = f_host.max()
 			k=np.where(f_host==maxVal)
-			print k[0][0], maxVal.real
-			res.append({"H":H_t,"G":G_t,"shift":k[0][0],"corr":maxVal.real})
+			
+			res.append({"H":H_t, "G":G_t, "shift":k[0][0], "corr":maxVal.real})
 			#maxVal = gpuarray.max(F_gpu.real)
 			#print maxVal
 	return res

@@ -10,6 +10,7 @@ try:
 	from pyfft.cuda import Plan
 	import pycuda.gpuarray as gpuarray
 	import pycuda.autoinit
+	dev=pycuda.autoinit.device
 except ImportError:
 	cuda_enabled = False
 
@@ -64,6 +65,7 @@ def calcCorrShiftmn(H, G, prctMatch=75,GPUmode=False, plot=False):
 	return res
 	
 def calcCorrShiftGPU(H, G):
+	log.info("Using: "+dev.name())
 	res=[]
 	# make sure we get arrays of items
 	if type(G) != type([]):

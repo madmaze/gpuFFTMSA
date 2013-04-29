@@ -7,11 +7,12 @@ import logging as log
 import glob
 import numpy as np
 import time
+import math
 
 import dataObj as do
 import aligner
 
-def readGenome(fname, verify=True):
+def readGenome(fname, verify=True, chopEfficiently=False):
 	flist=[]
 	if not os.path.exists(fname):
 		print "ERROR: genome input file not found", fname
@@ -32,12 +33,21 @@ def readGenome(fname, verify=True):
 		for l in fin.readlines():
 			data.extend(l.strip())
 		
-		tmp = do.dataObj(name=header,fname=f, dataRaw=list(data))
-		if verify and tmp.verifyTranscription() == False:
-			# perhaps we should fail here
-			log.warning(tmp.name + " failed transcription.")
-		G.append(tmp)
-		
+		if chopEfficiently:
+			n=int(2**math.floor(math.log(len(data),2)))
+			
+			tmp1 = do.dataObj(name=header,fname=f+"_part1", dataRaw=list(data[:n]))
+			tmp2 = do.dataObj(name=header,fname=f+"_part2", dataRaw=list(data[n:]))
+			G.append(tmp1)
+			G.append(tmp2)
+		else:
+			tmp = do.dataObj(name=header,fname=f, dataRaw=list(data))
+			
+			if verify and tmp.verifyTranscription() == False:
+				# perhaps we should fail here
+				log.warning(tmp.name + " failed transcription.")
+			G.append(tmp)
+	
 	return G
 	
 def readSequences(fname):
@@ -57,7 +67,7 @@ def readSequences(fname):
 def main(args):
 	# read input
 	log.info("reading input files..")
-	H_array = readGenome(args.input_genome, args.verify)
+	H_array = readGenome(args.input_genome, args.verify, chopEfficiently=args.chopefficient)
 	G_array = readSequences(args.input_seqs)
 	
 	log.info("read " + str(len(H_array)) + " genome sequences.")
@@ -81,6 +91,7 @@ if __name__ == "__main__":
 	parser.add_argument("--logFile",dest="logFile", default="", help="output to log file")
 	parser.add_argument("-l","--log",dest="logLevel", default="INFO", help="Log level (default: INFO)")
 	parser.add_argument("-g","--usegpu",dest="gpuflag", action="store_true", help="gpu option")
+	parser.add_argument("-e","--chopefficient",dest="chopefficient", action="store_true", help="chop efficiently")
 	parser.add_argument("--verify",dest="verify", action="store_true", help="verify successfull transcription")
 	args = parser.parse_args()
 	
@@ -91,9 +102,11 @@ if __name__ == "__main__":
 	
 	# setup logger
 	if args.logFile != "":
+		print "logging to", args.logFile
 		log.basicConfig(level=verbosity, filename=args.logFile, filemode='w', format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
 	else:
 		log.basicConfig(level=verbosity, format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
+	
 	try:
 		import pycuda
 		from pyfft.cuda import Plan

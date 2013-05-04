@@ -32,10 +32,19 @@ def calcCorrShiftmn(H,G):
 	# pad G with zeros to size of H
 	G_ = np.fft.fft(G.getTransPadded(len(H.dataTrans)))
 	f = np.fft.ifft(H_ * np.conj(G_))
+	#pylab.plot(f.real)
+	#pylab.ylim([-1.25,1.25])
 	pylab.plot(f.real)
-	#pylab.plot(H_.real)
-	pylab.show()
+	#pylab.plot(G.dataTrans.imag, label="imaginary")
+	pylab.title("Alignment Result")
+	pylab.xlabel("Interval/Time")
+	pylab.ylabel("Signature Amplitude")
+	#pylab.legend()
+	pylab.savefig("f_splitPeaks.png")
 	k=np.where(f==f.max())
+	matches=np.where(f>2*np.std(f))
+	for m in matches[0]:
+		print f[m], m
 	return (f.max(), k[0][0])
 	
 def calcCorrShiftmn_efficient(H,G,m,n):
@@ -136,7 +145,9 @@ h = d.dataTrans
 #g = np.roll(d.dataTrans,k)
 
 #g = dataObj.dataObj("test", list("cugcggaaccggugaguacaccggaa"))
-g = dataObj.dataObj("test", "G",list("gagugucgugcagccuccaggccccccccucccgggagagccauaguggucugc"))
+g = dataObj.dataObj("test", "G",list("gagugucgugcagccuccagggggagagccauaguggucugc"))
+#g = dataObj.dataObj("test", "G",list("cucacagcacgucggagguccggggggggagggcccucucgguaucaccagacg"))
+
 print "\ninput:", d.name
 print "length H:", len(d.dataTrans)
 print "length G:", len(g.dataTrans)
@@ -145,6 +156,7 @@ print "length G:", len(g.dataTrans)
 
 #corr,shift = calcCorrShiftmn_efficient(d, g, len(d),len(g))
 corr,shift = calcCorrShiftmn(d, g)
+corr,shift = 19.0,15
 
 print "shift:",shift
 print "corr:",corr.real

@@ -35,6 +35,8 @@ def calcCorrShiftmn(H, G, prctMatch=75,GPUmode=False, plot=False):
 		for H_t in H: 
 			# H is long and G is short
 			log.debug("Starting H_ fft...")
+			
+			# already zero padded from reading in
 			H_ = np.fft.fft(H_t.dataTrans)
 			
 			# check if we have many G
@@ -94,7 +96,6 @@ def calcCorrShiftGPU(H, G):
 			fftPlan.execute(G_gpu)
 			
 			F_gpu = H_gpu * G_gpu.conj()
-			
 			
 			fftPlan.execute(F_gpu, inverse=True)
 			

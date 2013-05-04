@@ -13,6 +13,7 @@ For GPU portion, the above need to be available, as well as pyCUDA and pyFFT.CUD
 Usage:
 -----
 - if pyFFTalign.py is run without arguments it will gather default values out of ./data
+
 ```
 usage: pyFFTalign.py [-h] [-i INPUT_GENOME] [-s INPUT_SEQS]
                      [--logFile LOGFILE] [-l LOGLEVEL] [-g] [-e] [--verify]

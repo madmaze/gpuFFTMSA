@@ -6,6 +6,7 @@ import pylab
 import math
 import logging as log
 
+# check if cuda is available
 try:
 	from pyfft.cuda import Plan
 	import pycuda.gpuarray as gpuarray
@@ -16,6 +17,7 @@ except ImportError:
 
 
 def genCompareStr(h,g):
+	# returns a sting of the alignments
 	compStr=""
 	for x,y in zip(h,g):
 		if x==y:

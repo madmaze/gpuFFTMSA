@@ -24,15 +24,16 @@ sequence to its genome
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT_GENOME, --inputgenome INPUT_GENOME
-                        Input genome file or dir of fna files
+                        Input genome file or dir of fna files (Default:
+                        ./data/sampleGenome.fna)
   -s INPUT_SEQS, --inputseqs INPUT_SEQS
-                        Input sequence file
-  --logFile LOGFILE     output to log file
+                        Input sequence file (Default: ./data/sampleGenome.seq)
+  --logFile LOGFILE     output to log file (Default: False)
   -l LOGLEVEL, --log LOGLEVEL
-                        Log level (default: INFO)
-  -g, --usegpu          gpu option
-  -e, --chopefficient   chop efficiently
-  --verify              verify successfull transcription
+                        Log level, use DEBUG of more output (Default: INFO)
+  -g, --usegpu          gpu option (Default: False)
+  -e, --chopefficient   chop efficiently (Default: False)
+  --verify              verify successfull transcription (Default: False)
 ```
 
 Code layout:

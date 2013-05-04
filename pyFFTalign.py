@@ -57,6 +57,7 @@ def readSequences(fname):
 		
 	f = open(fname, "r")
 	seqs=[]
+	# read every line of input file
 	for l in f.readlines():
 		if l.strip() != "":
 			name,data = l.strip().split("|")
@@ -86,13 +87,13 @@ def main(args):
 if __name__ == "__main__":
 	
 	parser = argparse.ArgumentParser(description="given a directory of input genomes and sequences it will try to match up each sequence to its genome")
-	parser.add_argument("-i","--inputgenome",dest="input_genome", default="./data/sampleGenome.fna", help="Input genome file or dir of fna files")
-	parser.add_argument("-s","--inputseqs",dest="input_seqs", default="./data/sampleGenome.seq", help="Input sequence file")
-	parser.add_argument("--logFile",dest="logFile", default="", help="output to log file")
-	parser.add_argument("-l","--log",dest="logLevel", default="INFO", help="Log level (default: INFO)")
-	parser.add_argument("-g","--usegpu",dest="gpuflag", action="store_true", help="gpu option")
-	parser.add_argument("-e","--chopefficient",dest="chopefficient", action="store_true", help="chop efficiently")
-	parser.add_argument("--verify",dest="verify", action="store_true", help="verify successfull transcription")
+	parser.add_argument("-i","--inputgenome",dest="input_genome", default="./data/sampleGenome.fna", help="Input genome file or dir of fna files (Default: ./data/sampleGenome.fna)")
+	parser.add_argument("-s","--inputseqs",dest="input_seqs", default="./data/sampleGenome.seq", help="Input sequence file (Default: ./data/sampleGenome.seq)")
+	parser.add_argument("--logFile",dest="logFile", default="", help="output to log file (Default: False)")
+	parser.add_argument("-l","--log",dest="logLevel", default="INFO", help="Log level, use DEBUG of more output (Default: INFO)")
+	parser.add_argument("-g","--usegpu",dest="gpuflag", action="store_true", help="gpu option (Default: False)")
+	parser.add_argument("-e","--chopefficient",dest="chopefficient", action="store_true", help="chop efficiently (Default: False)")
+	parser.add_argument("--verify",dest="verify", action="store_true", help="verify successfull transcription (Default: False)")
 	args = parser.parse_args()
 	
 	verbosity = getattr(log, args.logLevel.upper(), None)
@@ -107,6 +108,7 @@ if __name__ == "__main__":
 	else:
 		log.basicConfig(level=verbosity, format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
 	
+	# check if cuda is available
 	try:
 		import pycuda
 		from pyfft.cuda import Plan
